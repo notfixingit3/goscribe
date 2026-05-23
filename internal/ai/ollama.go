@@ -3,6 +3,7 @@ package ai
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"net/url"
 
 	"github.com/ollama/ollama/api"
@@ -26,7 +27,7 @@ func NewOllamaClient(baseURL, model string) (*OllamaClient, error) {
 		if err != nil {
 			return nil, fmt.Errorf("parse url: %w", err)
 		}
-		client = api.NewClient(u, nil)
+		client = api.NewClient(u, http.DefaultClient)
 	} else {
 		client, err = api.ClientFromEnvironment()
 		if err != nil {
