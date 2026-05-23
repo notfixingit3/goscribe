@@ -173,8 +173,15 @@ Commit messages from `bump` command include random Scooby-Doo quotes:
 - Keep `cmd/` files focused on CLI concerns only
 - Provider interface allows easy addition of new AI backends
 
+## Testing
+
+- No tests exist yet — add `*_test.go` files alongside implementation
+- Run tests: `go test ./...`
+- Run vet: `go vet ./...`
+
 ## Known Limitations
 
 - Documentation generation requires active AI provider
 - Git integration requires initialized git repository
 - State tracking is file-based (not database)
+- No tests written yet
