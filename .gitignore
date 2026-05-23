@@ -1,0 +1,21 @@
+# Binaries
+goscribe
+*.exe
+
+# Go
+vendor/
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation output
+docs/
+
+# State files
+.goscribe-state
