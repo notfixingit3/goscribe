@@ -1,3 +1,4 @@
+// Package cmd implements the goscribe CLI commands.
 package cmd
 
 import (
@@ -6,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/house/goscribe/internal/ai"
+	"github.com/house/goscribe/internal/ci"
 	"github.com/house/goscribe/internal/config"
 	"github.com/house/goscribe/internal/docs"
 	"github.com/house/goscribe/internal/git"
@@ -27,8 +29,8 @@ for future incremental updates.`,
 
 func init() {
 	generateCmd.Flags().BoolP("force", "f", false, "Force regeneration even if docs exist")
-	viper.BindPFlag("force", generateCmd.Flags().Lookup("force"))
-	
+	_ = viper.BindPFlag("force", generateCmd.Flags().Lookup("force"))
+
 	rootCmd.AddCommand(generateCmd)
 }
 
@@ -37,32 +39,63 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 	if len(args) > 0 {
 		sourcePath = args[0]
 	}
-	
+
 	absPath, err := filepath.Abs(sourcePath)
 	if err != nil {
-		return fmt.Errorf("resolve path: %w", err)
+		return fmt.Errorf("resolve path %q: %w.\nCheck that the path is valid", sourcePath, err)
 	}
-	
-	if _, err := os.Stat(absPath); os.IsNotExist(err) {
-		return fmt.Errorf("path does not exist: %s", absPath)
+
+	info, err := os.Stat(absPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("path does not exist: %s\nCheck the path and try again", absPath)
+		}
+		if os.IsPermission(err) {
+			return fmt.Errorf("permission denied accessing %s\nCheck file permissions", absPath)
+		}
+		return fmt.Errorf("cannot access path %s: %w", absPath, err)
 	}
-	
+
+	if !info.IsDir() {
+		return fmt.Errorf("path is not a directory: %s\nProvide a directory containing source code, not a file", absPath)
+	}
+
 	cfg, err := config.Load()
 	if err != nil {
-		return fmt.Errorf("load config: %w", err)
+		return fmt.Errorf("load config: %w.\nCheck your config file at ~/.goscribe.yaml", err)
 	}
-	
+
+	if cfg.OutputDir == "" {
+		return fmt.Errorf("output directory is empty in config.\nSet it with: goscribe generate --output docs")
+	}
+
 	provider, err := ai.NewProvider(cfg)
 	if err != nil {
-		return fmt.Errorf("create provider: %w", err)
+		return err
 	}
-	
+
 	generator := docs.NewGenerator(provider, cfg.OutputDir)
-	
-	if err := generator.Generate(absPath); err != nil {
-		return fmt.Errorf("generate docs: %w", err)
+
+	if cfg.Profile != "" {
+		profile, perr := docs.ResolveProfile(cfg.Profile)
+		if perr != nil {
+			return fmt.Errorf("resolve profile %q: %w", cfg.Profile, perr)
+		}
+		generator.WithProfile(profile)
 	}
-	
+
+	if genErr := generator.GenerateContext(cmd.Context(), absPath); genErr != nil {
+		if cfg.CI {
+			ci.Format(cmd.OutOrStdout(), ci.Result{
+				Success: false,
+				Command: "generate",
+				Error:   genErr.Error(),
+			}, cfg.OutputFormat)
+			return errExit(1)
+		}
+		return fmt.Errorf("generate docs: %w", genErr)
+	}
+
 	repo, err := git.OpenRepo(absPath)
 	if err == nil {
 		commit, err := repo.GetCurrentCommit()
@@ -72,7 +105,17 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 			}
 		}
 	}
-	
+
+	if cfg.CI {
+		ci.Format(cmd.OutOrStdout(), ci.Result{
+			Success:        true,
+			Command:        "generate",
+			FilesGenerated: generator.FileCount(),
+			OutputDir:      cfg.OutputDir,
+		}, cfg.OutputFormat)
+		return nil
+	}
+
 	fmt.Printf("Documentation generated successfully in %s\n", cfg.OutputDir)
 	return nil
 }

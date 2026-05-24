@@ -1,22 +1,35 @@
+// Package config handles loading and saving goscribe configuration.
 package config
 
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/spf13/viper"
 )
 
+// Config holds all goscribe configuration values.
 type Config struct {
-	Provider  string `mapstructure:"provider"`
-	Model     string `mapstructure:"model"`
-	OutputDir string `mapstructure:"output"`
-	Verbose   bool   `mapstructure:"verbose"`
+	Provider     string        `mapstructure:"provider"`
+	Model        string        `mapstructure:"model"`
+	OutputDir    string        `mapstructure:"output"`
+	Verbose      bool          `mapstructure:"verbose"`
+	Timeout      time.Duration `mapstructure:"timeout"`
+	Retries      int           `mapstructure:"retries"`
+	RetryBackoff time.Duration `mapstructure:"retry_backoff"`
+	CI           bool          `mapstructure:"ci"`
+	OutputFormat string        `mapstructure:"output_format"`
+	Profile      string        `mapstructure:"profile"`
 }
 
+// Load reads configuration from viper (flags, env, config file) and returns a Config.
 func Load() (*Config, error) {
 	viper.SetDefault("output", "docs")
 	viper.SetDefault("verbose", false)
+	viper.SetDefault("timeout", 5*time.Minute)
+	viper.SetDefault("retries", 3)
+	viper.SetDefault("retry_backoff", 2*time.Second)
 
 	var cfg Config
 	if err := viper.Unmarshal(&cfg); err != nil {
@@ -26,6 +39,7 @@ func Load() (*Config, error) {
 	return &cfg, nil
 }
 
+// Save writes the configuration to the default config file path.
 func Save(cfg *Config) error {
 	viper.Set("provider", cfg.Provider)
 	viper.Set("model", cfg.Model)

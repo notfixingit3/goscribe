@@ -1,5 +1,5 @@
 # Binaries
-goscribe
+/goscribe
 *.exe
 
 # Go
@@ -15,7 +15,7 @@ vendor/
 Thumbs.db
 
 # Documentation output
-docs/
+/docs/
 
 # State files
 .goscribe-state
