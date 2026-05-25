@@ -1,0 +1,34 @@
+# GoScribe OpenCode Plugin Configuration
+# Place this file at .opencode/goscribe.yaml in your project root.
+
+# Enable or disable the plugin entirely.
+enabled: true
+
+# When true, documentation regenerates automatically when watched files change.
+# When false, docs only generate on explicit trigger (e.g. save hook or command).
+auto_generate: false
+
+# Where generated documentation is written, relative to project_path.
+output_dir: docs
+
+# AI provider name. Must match a provider configured in ~/.goscribe.yaml.
+provider: ollama
+
+# Model to use for generation. Overrides the provider default if set.
+model: llama2
+
+# Absolute or relative path to the Go project root.
+# Use "." for the directory containing this config file.
+project_path: .
+
+# Glob patterns for files to watch. Only matched files trigger auto-generation.
+watch_patterns:
+  - "**/*.go"
+
+# Glob patterns for files to ignore. Overrides watch_patterns.
+ignore_patterns:
+  - "**/*_test.go"
+  - "vendor/**"
+
+# Address of the OpenCode agent system.
+agent_address: "http://localhost:8080"

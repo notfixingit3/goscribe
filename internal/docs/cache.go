@@ -19,9 +19,9 @@ func NewCache(dir string) *Cache {
 	return &Cache{dir: dir}
 }
 
-// Get retrieves cached documentation for the given profile and source content.
-func (c *Cache) Get(profileName string, content []byte) (string, bool) {
-	key := c.key(profileName, content)
+// Get retrieves cached documentation for the given profile, template, and source content.
+func (c *Cache) Get(profileName, templateName string, content []byte) (string, bool) {
+	key := c.key(profileName, templateName, content)
 	path := filepath.Join(c.dir, key)
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -30,9 +30,9 @@ func (c *Cache) Get(profileName string, content []byte) (string, bool) {
 	return string(data), true
 }
 
-// Set stores documentation for the given profile and source content.
-func (c *Cache) Set(profileName string, content []byte, doc string) error {
-	key := c.key(profileName, content)
+// Set stores documentation for the given profile, template, and source content.
+func (c *Cache) Set(profileName, templateName string, content []byte, doc string) error {
+	key := c.key(profileName, templateName, content)
 	path := filepath.Join(c.dir, key)
 	if err := os.MkdirAll(filepath.Dir(path), 0750); err != nil {
 		return fmt.Errorf("create cache dir: %w", err)
@@ -43,14 +43,20 @@ func (c *Cache) Set(profileName string, content []byte, doc string) error {
 	return nil
 }
 
-func (c *Cache) key(profileName string, content []byte) string {
-	name := strings.TrimSpace(profileName)
-	if name == "" {
-		name = DefaultProfileName
+func (c *Cache) key(profileName, templateName string, content []byte) string {
+	profile := strings.TrimSpace(profileName)
+	if profile == "" {
+		profile = DefaultProfileName
+	}
+	template := strings.TrimSpace(templateName)
+	if template == "" {
+		template = "none"
 	}
 	h := sha256.New()
-	_, _ = h.Write([]byte("goscribe-cache-v2\nprofile:"))
-	_, _ = h.Write([]byte(name))
+	_, _ = h.Write([]byte("goscribe-cache-v3\nprofile:"))
+	_, _ = h.Write([]byte(profile))
+	_, _ = h.Write([]byte("\ntemplate:"))
+	_, _ = h.Write([]byte(template))
 	_, _ = h.Write([]byte("\ncontent:"))
 	_, _ = h.Write(content)
 	return hex.EncodeToString(h.Sum(nil))

@@ -21,6 +21,7 @@ type Generator struct {
 	workers   int
 	cache     *Cache
 	profile   Profile
+	template  Template
 }
 
 // NewGenerator creates a new documentation Generator.
@@ -54,6 +55,19 @@ func (g *Generator) WithProfile(profile Profile) *Generator {
 		g.profile = profile
 	}
 	return g
+}
+
+// WithTemplate sets the documentation template for generation.
+func (g *Generator) WithTemplate(t Template) *Generator {
+	g.template = t
+	return g
+}
+
+func (g *Generator) templateName() string {
+	if g.template == nil {
+		return ""
+	}
+	return g.template.Name()
 }
 
 // FileCount returns the number of files processed in the last Generate call.
@@ -168,7 +182,7 @@ func (g *Generator) processFileContext(ctx context.Context, sourcePath, file str
 	}
 
 	if g.cache != nil {
-		if cached, ok := g.cache.Get(g.profile.Name(), content); ok {
+		if cached, ok := g.cache.Get(g.profile.Name(), g.templateName(), content); ok {
 			doc := cached
 			outputFile := filepath.Join(g.outputDir, cleanFile+".md")
 			if mkErr := os.MkdirAll(filepath.Dir(outputFile), 0750); mkErr != nil {
@@ -181,7 +195,7 @@ func (g *Generator) processFileContext(ctx context.Context, sourcePath, file str
 		}
 	}
 
-	b := NewPromptBuilder(g.profile)
+	b := NewPromptBuilder(g.profile).WithTemplate(g.template)
 	prompt := b.BuildGeneratePrompt(file, content)
 
 	doc, err := g.provider.Generate(ctx, prompt)
@@ -192,7 +206,7 @@ func (g *Generator) processFileContext(ctx context.Context, sourcePath, file str
 	doc = b.FormatOutput(doc)
 
 	if g.cache != nil {
-		_ = g.cache.Set(g.profile.Name(), content, doc)
+		_ = g.cache.Set(g.profile.Name(), g.templateName(), content, doc)
 	}
 
 	outputFile := filepath.Join(g.outputDir, cleanFile+".md")

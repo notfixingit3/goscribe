@@ -1,0 +1,53 @@
+name: Test GoScribe Action
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/actions/goscribe/**"
+      - ".github/workflows/test-action.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/actions/goscribe/**"
+      - ".github/workflows/test-action.yml"
+  workflow_dispatch:
+
+jobs:
+  test-action:
+    name: Test GoScribe Action
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build goscribe from source
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache: true
+
+      - name: Install goscribe
+        run: |
+          go build -o /usr/local/bin/goscribe ./cmd/goscribe
+          goscribe version
+
+      - name: Run goscribe action
+        id: goscribe
+        uses: ./.github/actions/goscribe
+        with:
+          path: "."
+          provider: "ollama"
+          model: "llama2"
+          output: "test-docs"
+          version: "latest"
+          verbose: "true"
+        continue-on-error: true
+
+      - name: Verify action output
+        run: |
+          echo "Output dir: ${{ steps.goscribe.outputs.output-dir }}"
+          if [ "${{ steps.goscribe.outputs.output-dir }}" != "test-docs" ]; then
+            echo "::error::Output dir mismatch"
+            exit 1
+          fi
+          echo "Action output verified successfully."

@@ -53,6 +53,7 @@ func init() {
 	rootCmd.PersistentFlags().Bool("ci", false, "Enable CI mode (non-interactive, structured output)")
 	rootCmd.PersistentFlags().String("output-format", "text", "Output format: text, json, markdown, github")
 	rootCmd.PersistentFlags().String("profile", "", "Documentation profile: software-documenter, technical-writer, github-readme-expert, github-wiki-expert, api-reference, developer-onboarding, operations-runbook")
+	rootCmd.PersistentFlags().String("template", "", "Documentation template: elegant, technical, futuristic, minimal, friendly")
 
 	_ = viper.BindPFlag("provider", rootCmd.PersistentFlags().Lookup("provider"))
 	_ = viper.BindPFlag("model", rootCmd.PersistentFlags().Lookup("model"))
@@ -64,6 +65,7 @@ func init() {
 	_ = viper.BindPFlag("ci", rootCmd.PersistentFlags().Lookup("ci"))
 	_ = viper.BindPFlag("output_format", rootCmd.PersistentFlags().Lookup("output-format"))
 	_ = viper.BindPFlag("profile", rootCmd.PersistentFlags().Lookup("profile"))
+	_ = viper.BindPFlag("template", rootCmd.PersistentFlags().Lookup("template"))
 }
 
 func initConfig() error {

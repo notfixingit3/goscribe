@@ -1,3 +1,4 @@
+// Package git wraps go-git operations for repository inspection.
 package git
 
 import (
@@ -8,10 +9,12 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/object"
 )
 
+// Repository wraps a go-git Repository for goscribe operations.
 type Repository struct {
 	repo *git.Repository
 }
 
+// OpenRepo opens a git repository at the given path.
 func OpenRepo(path string) (*Repository, error) {
 	repo, err := git.PlainOpen(path)
 	if err != nil {
@@ -20,6 +23,7 @@ func OpenRepo(path string) (*Repository, error) {
 	return &Repository{repo: repo}, nil
 }
 
+// GetCurrentCommit returns the HEAD commit hash.
 func (r *Repository) GetCurrentCommit() (string, error) {
 	head, err := r.repo.Head()
 	if err != nil {
@@ -28,6 +32,7 @@ func (r *Repository) GetCurrentCommit() (string, error) {
 	return head.Hash().String(), nil
 }
 
+// GetChangedFiles returns file paths that changed between two commits.
 func (r *Repository) GetChangedFiles(fromCommit, toCommit string) ([]string, error) {
 	fromHash, err := r.repo.ResolveRevision(plumbing.Revision(fromCommit))
 	if err != nil {

@@ -18,6 +18,7 @@ type Updater struct {
 	workers   int
 	cache     *Cache
 	profile   Profile
+	template  Template
 }
 
 // NewUpdater creates a new documentation Updater.
@@ -51,6 +52,19 @@ func (u *Updater) WithProfile(profile Profile) *Updater {
 		u.profile = profile
 	}
 	return u
+}
+
+// WithTemplate sets the documentation template for updates.
+func (u *Updater) WithTemplate(t Template) *Updater {
+	u.template = t
+	return u
+}
+
+func (u *Updater) templateName() string {
+	if u.template == nil {
+		return ""
+	}
+	return u.template.Name()
 }
 
 // Update regenerates documentation for each changed file.
@@ -112,7 +126,7 @@ func (u *Updater) updateFileContext(ctx context.Context, sourcePath, file string
 	}
 
 	if u.cache != nil {
-		if cached, ok := u.cache.Get(u.profile.Name(), content); ok {
+		if cached, ok := u.cache.Get(u.profile.Name(), u.templateName(), content); ok {
 			doc := cached
 			outputFile := filepath.Join(u.outputDir, cleanFile+".md")
 			if mkErr := os.MkdirAll(filepath.Dir(outputFile), 0750); mkErr != nil {
@@ -125,7 +139,7 @@ func (u *Updater) updateFileContext(ctx context.Context, sourcePath, file string
 		}
 	}
 
-	b := NewPromptBuilder(u.profile)
+	b := NewPromptBuilder(u.profile).WithTemplate(u.template)
 	prompt := b.BuildUpdatePrompt(file, content)
 
 	doc, err := u.provider.Generate(ctx, prompt)
@@ -136,7 +150,7 @@ func (u *Updater) updateFileContext(ctx context.Context, sourcePath, file string
 	doc = b.FormatOutput(doc)
 
 	if u.cache != nil {
-		_ = u.cache.Set(u.profile.Name(), content, doc)
+		_ = u.cache.Set(u.profile.Name(), u.templateName(), content, doc)
 	}
 
 	outputFile := filepath.Join(u.outputDir, cleanFile+".md")

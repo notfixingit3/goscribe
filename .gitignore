@@ -19,3 +19,13 @@ Thumbs.db
 
 # State files
 .goscribe-state
+
+# Build artifacts
+coverage.out
+*.test
+
+# Sisyphus internal (planning/state files, not project source)
+.sisyphus/
+
+# Ledger reports
+ledger-reports/

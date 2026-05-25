@@ -84,6 +84,16 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		generator.WithProfile(profile)
 	}
 
+	if cfg.Template != "" {
+		tmpl, terr := docs.ResolveTemplate(cfg.Template)
+		if terr != nil {
+			return fmt.Errorf("resolve template %q: %w", cfg.Template, terr)
+		}
+		if tmpl != nil {
+			generator.WithTemplate(tmpl)
+		}
+	}
+
 	if genErr := generator.GenerateContext(cmd.Context(), absPath); genErr != nil {
 		if cfg.CI {
 			ci.Format(cmd.OutOrStdout(), ci.Result{

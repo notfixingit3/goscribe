@@ -176,6 +176,20 @@ func (c *Client) Update(ctx context.Context, sourcePath string, opts UpdateOptio
 		}
 		updater.WithProfile(profile)
 	}
+	if c.template != "" {
+		tmpl, err := docs.ResolveTemplate(c.template)
+		if err != nil {
+			return nil, &Error{
+				Op:   "update",
+				Kind: ErrUpdateFailed,
+				Path: absPath,
+				Err:  fmt.Errorf("resolve template: %w", err),
+			}
+		}
+		if tmpl != nil {
+			updater.WithTemplate(tmpl)
+		}
+	}
 	if err := updater.UpdateContext(ctx, absPath, changedFiles); err != nil {
 		return nil, &Error{
 			Op:   "update",

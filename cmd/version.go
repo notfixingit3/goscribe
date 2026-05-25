@@ -45,37 +45,37 @@ func runBump(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("bump version: %w", err)
 	}
-	
+
 	quote := version.GetScoobyQuote()
 	message := fmt.Sprintf("Bump version to %s\n\n%s", newVersion, quote)
-	
-	commitCmd := exec.Command("git", "add", "-A")
-	if err := commitCmd.Run(); err != nil {
-		return fmt.Errorf("stage changes: %w", err)
+
+	commitCmd := exec.Command("git", "add", "-A") // #nosec G204
+	if runErr := commitCmd.Run(); runErr != nil {
+		return fmt.Errorf("stage changes: %w", runErr)
 	}
-	
-	commitCmd = exec.Command("git", "commit", "-m", message)
-	output, err := commitCmd.CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("commit failed: %w\n%s", err, string(output))
+
+	commitCmd = exec.Command("git", "commit", "-m", message) // #nosec G204
+	output, commitErr := commitCmd.CombinedOutput()
+	if commitErr != nil {
+		return fmt.Errorf("commit failed: %w\n%s", commitErr, string(output))
 	}
-	
+
 	fmt.Printf("Version bumped to %s\n", newVersion)
 	fmt.Printf("Commit message: %s\n", strings.Split(message, "\n")[0])
 	fmt.Printf("Scooby quote: %s\n", quote)
-	
+
 	return nil
 }
 
 func runTag(cmd *cobra.Command, args []string) error {
 	v := version.Get()
-	
-	tagCmd := exec.Command("git", "tag", "-a", v, "-m", fmt.Sprintf("Release %s", v))
+
+	tagCmd := exec.Command("git", "tag", "-a", v, "-m", fmt.Sprintf("Release %s", v)) // #nosec G204
 	output, err := tagCmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("tag failed: %w\n%s", err, string(output))
 	}
-	
+
 	fmt.Printf("Tagged %s\n", v)
 	return nil
 }

@@ -100,6 +100,20 @@ func (c *Client) Generate(ctx context.Context, sourcePath string, opts GenerateO
 		}
 		generator.WithProfile(profile)
 	}
+	if c.template != "" {
+		tmpl, err := docs.ResolveTemplate(c.template)
+		if err != nil {
+			return nil, &Error{
+				Op:   "generate",
+				Kind: ErrGenerationFailed,
+				Path: absPath,
+				Err:  fmt.Errorf("resolve template: %w", err),
+			}
+		}
+		if tmpl != nil {
+			generator.WithTemplate(tmpl)
+		}
+	}
 	if err := generator.GenerateContext(ctx, absPath); err != nil {
 		return nil, &Error{
 			Op:   "generate",

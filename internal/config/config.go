@@ -21,6 +21,7 @@ type Config struct {
 	CI           bool          `mapstructure:"ci"`
 	OutputFormat string        `mapstructure:"output_format"`
 	Profile      string        `mapstructure:"profile"`
+	Template     string        `mapstructure:"template"`
 }
 
 // Load reads configuration from viper (flags, env, config file) and returns a Config.

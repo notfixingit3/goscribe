@@ -19,6 +19,7 @@ type clientOptions struct {
 	workers      int
 	cacheDir     string
 	profile      string
+	template     string
 }
 
 // WithProvider injects a custom Provider implementation.
@@ -96,5 +97,12 @@ func WithCacheDir(dir string) ClientOption {
 func WithProfile(name string) ClientOption {
 	return func(o *clientOptions) {
 		o.profile = name
+	}
+}
+
+// WithTemplate sets the documentation template for generation and updates.
+func WithTemplate(name string) ClientOption {
+	return func(o *clientOptions) {
+		o.template = name
 	}
 }

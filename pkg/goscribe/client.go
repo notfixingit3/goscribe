@@ -41,6 +41,7 @@ type Client struct {
 	workers      int
 	cacheDir     string
 	profile      string
+	template     string
 }
 
 // NewClient creates a Client using the supplied options.
@@ -79,6 +80,7 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 		workers:      co.workers,
 		cacheDir:     co.cacheDir,
 		profile:      co.profile,
+		template:     co.template,
 	}
 
 	// If a provider was injected, use it directly.

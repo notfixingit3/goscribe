@@ -23,6 +23,7 @@ type PluginConfig struct {
 	IgnorePatterns []string `yaml:"ignore_patterns"`
 	AgentAddress   string   `yaml:"agent_address"`
 	Profile        string   `yaml:"profile"`
+	Template       string   `yaml:"template"`
 }
 
 // DefaultConfig returns a PluginConfig with sensible defaults.

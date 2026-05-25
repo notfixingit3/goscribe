@@ -1,3 +1,4 @@
+// Package providers manages AI provider configuration persistence.
 package providers
 
 import (
@@ -7,6 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// ProviderConfig holds the configuration for a single AI provider.
 type ProviderConfig struct {
 	Name    string `mapstructure:"name"`
 	URL     string `mapstructure:"url"`
@@ -15,6 +17,7 @@ type ProviderConfig struct {
 	Default bool   `mapstructure:"default"`
 }
 
+// SaveProvider adds or updates a provider in the config file.
 func SaveProvider(provider ProviderConfig) error {
 	providers, err := ListProviders()
 	if err != nil {
@@ -44,6 +47,7 @@ func SaveProvider(provider ProviderConfig) error {
 	return saveConfig()
 }
 
+// ListProviders returns all configured providers from the config file.
 func ListProviders() ([]ProviderConfig, error) {
 	var providers []ProviderConfig
 	if err := viper.UnmarshalKey("providers", &providers); err != nil {
@@ -52,6 +56,7 @@ func ListProviders() ([]ProviderConfig, error) {
 	return providers, nil
 }
 
+// RemoveProvider deletes a provider by name from the config file.
 func RemoveProvider(name string) error {
 	providers, err := ListProviders()
 	if err != nil {

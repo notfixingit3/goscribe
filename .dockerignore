@@ -1,0 +1,15 @@
+.git/
+.gitignore
+*.md
+test/
+.sisyphus/
+coverage.out
+coverage.html
+goscribe
+goscribe.exe
+*.tar.gz
+*.zip
+.github/
+.golangci.yml
+.goreleaser.yaml
+LICENSE

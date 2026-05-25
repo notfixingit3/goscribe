@@ -66,6 +66,7 @@ Flags:
 | `--workers` | | `1` | Concurrent workers for generation |
 | `--cache-dir` | | `""` | Content-addressed cache directory |
 | `--profile` | | `""` | Documentation profile (see Profiles below) |
+| `--template` | | `""` | Documentation template (see Templates below) |
 
 ### `goscribe update [path]`
 
@@ -405,8 +406,55 @@ Environment variables (prefix `GOSCRIBE_`):
 | `GOSCRIBE_RETRIES` | `retries` |
 | `GOSCRIBE_RETRY_BACKOFF` | `retry_backoff` |
 | `GOSCRIBE_PROFILE` | `profile` |
+| `GOSCRIBE_TEMPLATE` | `template` |
 
 Priority order: command flags > environment variables > config file > defaults.
+
+## Documentation Templates
+
+Templates control the **style** and **presentation** of generated documentation. They answer "how should this look" while profiles answer "what should this document." Templates are optional — without one, GoScribe uses a neutral writing style.
+
+Use the `--template` flag or set `template` in your config file.
+
+| Template | Description |
+|----------|-------------|
+| `elegant` | Sophisticated, polished, professional tone |
+| `technical` | Precise, dense, code-heavy documentation |
+| `futuristic` | Modern, forward-looking, innovative tone |
+| `minimal` | Bare bones, just the facts, no embellishment |
+| `friendly` | Conversational, welcoming, beginner-friendly |
+
+### Using Templates
+
+CLI:
+```bash
+goscribe generate --template elegant
+goscribe update --template minimal
+```
+
+Config file:
+```yaml
+template: elegant
+```
+
+Library API:
+```go
+client, err := goscribe.NewClient(
+    goscribe.WithConfiguredProvider("openai"),
+    goscribe.WithTemplate("elegant"),
+    goscribe.WithOutputDir("docs"),
+)
+```
+
+Plugin config:
+```yaml
+template: friendly
+```
+
+Templates compose with profiles for even more control:
+```bash
+goscribe generate --profile github-readme-expert --template elegant
+```
 
 ## Documentation Profiles
 

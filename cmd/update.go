@@ -110,6 +110,16 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 		updater.WithProfile(profile)
 	}
 
+	if cfg.Template != "" {
+		tmpl, terr := docs.ResolveTemplate(cfg.Template)
+		if terr != nil {
+			return fmt.Errorf("resolve template %q: %w", cfg.Template, terr)
+		}
+		if tmpl != nil {
+			updater.WithTemplate(tmpl)
+		}
+	}
+
 	if err := updater.UpdateContext(cmd.Context(), absPath, changedFiles); err != nil {
 		if cfg.CI {
 			ci.Format(cmd.OutOrStdout(), ci.Result{

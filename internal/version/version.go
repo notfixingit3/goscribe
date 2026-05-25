@@ -1,3 +1,4 @@
+// Package version manages the goscribe version string and related utilities.
 package version
 
 import (
@@ -6,6 +7,7 @@ import (
 	"strings"
 )
 
+// Version is the current goscribe version, overridden at build time via ldflags.
 var Version = "0.0.1"
 
 var scoobyQuotes = []string{
@@ -19,10 +21,12 @@ var scoobyQuotes = []string{
 	"Puppy Power! Version updated!",
 }
 
+// Get returns the current version string.
 func Get() string {
 	return Version
 }
 
+// BumpPatch increments the patch version and updates the package-level Version.
 func BumpPatch() (string, error) {
 	parts := strings.Split(Version, ".")
 	if len(parts) != 3 {
@@ -39,6 +43,7 @@ func BumpPatch() (string, error) {
 	return Version, nil
 }
 
+// GetScoobyQuote returns a Scooby-Doo quote selected by the current version hash.
 func GetScoobyQuote() string {
 	// In a real implementation, you'd use crypto/rand for randomness
 	// For simplicity, we'll use a simple hash-based approach
@@ -49,6 +54,7 @@ func GetScoobyQuote() string {
 	return scoobyQuotes[hash%len(scoobyQuotes)]
 }
 
+// GetGitVersion returns the git describe output for the current repository.
 func GetGitVersion() (string, error) {
 	cmd := exec.Command("git", "describe", "--tags", "--always")
 	output, err := cmd.Output()

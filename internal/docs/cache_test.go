@@ -14,12 +14,12 @@ func TestCacheRoundTrip(t *testing.T) {
 	doc := "# main.go\n\nThis is the main package."
 
 	// Set should succeed
-	if err := cache.Set(DefaultProfileName, content, doc); err != nil {
+	if err := cache.Set(DefaultProfileName, "", content, doc); err != nil {
 		t.Fatalf("Set failed: %v", err)
 	}
 
 	// Get should return the cached doc
-	got, ok := cache.Get(DefaultProfileName, content)
+	got, ok := cache.Get(DefaultProfileName, "", content)
 	if !ok {
 		t.Fatal("Get returned false for existing key")
 	}
@@ -34,7 +34,7 @@ func TestCacheMiss(t *testing.T) {
 
 	content := []byte("package main\n")
 
-	got, ok := cache.Get(DefaultProfileName, content)
+	got, ok := cache.Get(DefaultProfileName, "", content)
 	if ok {
 		t.Errorf("Get returned true for missing key, got %q", got)
 	}
@@ -47,18 +47,18 @@ func TestCacheDifferentContent(t *testing.T) {
 	content1 := []byte("package main\n")
 	content2 := []byte("package foo\n")
 
-	if err := cache.Set(DefaultProfileName, content1, "doc for main"); err != nil {
+	if err := cache.Set(DefaultProfileName, "", content1, "doc for main"); err != nil {
 		t.Fatalf("Set failed: %v", err)
 	}
 
 	// content2 should be a cache miss
-	got, ok := cache.Get(DefaultProfileName, content2)
+	got, ok := cache.Get(DefaultProfileName, "", content2)
 	if ok {
 		t.Errorf("Get returned true for different content, got %q", got)
 	}
 
 	// content1 should still be a hit
-	got, ok = cache.Get(DefaultProfileName, content1)
+	got, ok = cache.Get(DefaultProfileName, "", content1)
 	if !ok {
 		t.Fatal("Get returned false for existing key")
 	}
@@ -73,12 +73,12 @@ func TestCacheKeyDeterminism(t *testing.T) {
 
 	content := []byte("package main\n")
 
-	if err := cache.Set(DefaultProfileName, content, "doc"); err != nil {
+	if err := cache.Set(DefaultProfileName, "", content, "doc"); err != nil {
 		t.Fatalf("Set failed: %v", err)
 	}
 
 	// Same content should produce same key
-	got, ok := cache.Get(DefaultProfileName, []byte("package main\n"))
+	got, ok := cache.Get(DefaultProfileName, "", []byte("package main\n"))
 	if !ok {
 		t.Fatal("Get returned false for same content")
 	}
@@ -92,13 +92,13 @@ func TestCachePersistence(t *testing.T) {
 	cache1 := NewCache(tmpDir)
 
 	content := []byte("package main\n")
-	if err := cache1.Set(DefaultProfileName, content, "persistent doc"); err != nil {
+	if err := cache1.Set(DefaultProfileName, "", content, "persistent doc"); err != nil {
 		t.Fatalf("Set failed: %v", err)
 	}
 
 	// New cache instance pointing to same dir
 	cache2 := NewCache(tmpDir)
-	got, ok := cache2.Get(DefaultProfileName, content)
+	got, ok := cache2.Get(DefaultProfileName, "", content)
 	if !ok {
 		t.Fatal("Get returned false for persisted entry")
 	}
@@ -116,7 +116,7 @@ func TestCacheConcurrency(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		go func(i int) {
 			content := []byte(string(rune('a' + i)))
-			_ = cache.Set(DefaultProfileName, content, string(rune('A'+i)))
+			_ = cache.Set(DefaultProfileName, "", content, string(rune('A'+i)))
 			done <- struct{}{}
 		}(i)
 	}
@@ -128,7 +128,7 @@ func TestCacheConcurrency(t *testing.T) {
 	// Verify all entries
 	for i := 0; i < 10; i++ {
 		content := []byte(string(rune('a' + i)))
-		got, ok := cache.Get(DefaultProfileName, content)
+		got, ok := cache.Get(DefaultProfileName, "", content)
 		if !ok {
 			t.Errorf("Get returned false for entry %d", i)
 			continue
@@ -146,7 +146,7 @@ func TestCacheSetCreatesDir(t *testing.T) {
 	cache := NewCache(cacheDir)
 
 	content := []byte("package main\n")
-	if err := cache.Set(DefaultProfileName, content, "doc"); err != nil {
+	if err := cache.Set(DefaultProfileName, "", content, "doc"); err != nil {
 		t.Fatalf("Set failed: %v", err)
 	}
 

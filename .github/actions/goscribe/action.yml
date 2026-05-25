@@ -1,0 +1,140 @@
+name: "GoScribe Documentation"
+description: "Generate documentation from Go source code using AI providers (OpenAI or Ollama)"
+
+inputs:
+  path:
+    description: "Source directory to generate documentation from"
+    required: true
+    default: "."
+  provider:
+    description: "AI provider to use (ollama or openai)"
+    required: false
+    default: "openai"
+  model:
+    description: "Model to use for generation"
+    required: false
+    default: "gpt-4"
+  output:
+    description: "Output directory for generated documentation"
+    required: false
+    default: "docs"
+  api-key:
+    description: "API key for the AI provider (use secrets for OpenAI)"
+    required: false
+    default: ""
+  version:
+    description: "GoScribe version to install (e.g. v0.0.1, latest)"
+    required: false
+    default: "latest"
+  force:
+    description: "Force regeneration even if docs exist"
+    required: false
+    default: "false"
+  verbose:
+    description: "Enable verbose output"
+    required: false
+    default: "false"
+  commit-docs:
+    description: "Commit generated docs to the repository if changes exist"
+    required: false
+    default: "false"
+  commit-message:
+    description: "Commit message when committing generated docs"
+    required: false
+    default: "docs: update documentation via goscribe"
+
+outputs:
+  output-dir:
+    description: "Directory where documentation was generated"
+    value: ${{ steps.generate.outputs.output-dir }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Determine OS and ARCH
+      id: platform
+      shell: bash
+      run: |
+        OS=$(echo "${{ runner.os }}" | tr '[:upper:]' '[:lower:]')
+        ARCH=$(uname -m)
+        if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; fi
+        if [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi
+        echo "os=$OS" >> "$GITHUB_OUTPUT"
+        echo "arch=$ARCH" >> "$GITHUB_OUTPUT"
+
+    - name: Install GoScribe
+      shell: bash
+      env:
+        GOSCRIBE_VERSION: ${{ inputs.version }}
+      run: |
+        VERSION="${GOSCRIBE_VERSION}"
+        REPO="house/goscribe"
+
+        if [ "$VERSION" = "latest" ]; then
+          VERSION=$(curl -sfL "https://api.github.com/repos/${REPO}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+          if [ -z "$VERSION" ]; then
+            echo "::error::Failed to determine latest version of goscribe"
+            exit 1
+          fi
+        fi
+
+        OS="${{ steps.platform.outputs.os }}"
+        ARCH="${{ steps.platform.outputs.arch }}"
+        BINARY="goscribe_${VERSION}_${OS}_${ARCH}.tar.gz"
+        URL="https://github.com/${REPO}/releases/download/${VERSION}/${BINARY}"
+
+        echo "Downloading goscribe ${VERSION} for ${OS}/${ARCH}..."
+        curl -sfL "$URL" -o goscribe.tar.gz
+        tar xzf goscribe.tar.gz goscribe
+        chmod +x goscribe
+        sudo mv goscribe /usr/local/bin/goscribe
+        rm -f goscribe.tar.gz
+
+        echo "::group::GoScribe version"
+        goscribe version
+        echo "::endgroup::"
+
+    - name: Generate documentation
+      id: generate
+      shell: bash
+      env:
+        GOSCRIBE_PROVIDER: ${{ inputs.provider }}
+        GOSCRIBE_MODEL: ${{ inputs.model }}
+        GOSCRIBE_OUTPUT: ${{ inputs.output }}
+        GOSCRIBE_VERBOSE: ${{ inputs.verbose }}
+      run: |
+        ARGS="${{ inputs.path }}"
+
+        if [ "${{ inputs.force }}" = "true" ]; then
+          ARGS="$ARGS --force"
+        fi
+
+        # Configure API key via provider command if provided
+        if [ -n "${{ inputs.api-key }}" ]; then
+          goscribe provider add "${{ inputs.provider }}" \
+            --key "${{ inputs.api-key }}" \
+            --model "${{ inputs.model }}" \
+            --default
+        fi
+
+        goscribe generate $ARGS
+        echo "output-dir=${{ inputs.output }}" >> "$GITHUB_OUTPUT"
+
+    - name: Commit documentation changes
+      if: inputs.commit-docs == 'true'
+      shell: bash
+      env:
+        COMMIT_MSG: ${{ inputs.commit-message }}
+        OUTPUT_DIR: ${{ inputs.output }}
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+        if git diff --quiet "${OUTPUT_DIR}"; then
+          echo "No documentation changes to commit."
+          exit 0
+        fi
+
+        git add "${OUTPUT_DIR}"
+        git commit -m "${COMMIT_MSG}"
+        echo "Documentation changes committed."
