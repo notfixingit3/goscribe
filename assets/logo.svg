@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#00ADD8" opacity="0.1"/>
+  <circle cx="100" cy="100" r="90" fill="none" stroke="#00ADD8" stroke-width="3"/>
+  
+  <!-- Book/Document icon -->
+  <rect x="55" y="45" width="90" height="110" rx="8" fill="#00ADD8"/>
+  <rect x="60" y="50" width="80" height="100" rx="5" fill="#ffffff"/>
+  
+  <!-- Document lines -->
+  <rect x="70" y="65" width="60" height="4" rx="2" fill="#00ADD8" opacity="0.6"/>
+  <rect x="70" y="78" width="50" height="4" rx="2" fill="#00ADD8" opacity="0.4"/>
+  <rect x="70" y="91" width="55" height="4" rx="2" fill="#00ADD8" opacity="0.4"/>
+  <rect x="70" y="104" width="45" height="4" rx="2" fill="#00ADD8" opacity="0.4"/>
+  <rect x="70" y="117" width="60" height="4" rx="2" fill="#00ADD8" opacity="0.6"/>
+  <rect x="70" y="130" width="40" height="4" rx="2" fill="#00ADD8" opacity="0.4"/>
+  
+  <!-- Go gopher ears peeking from behind -->
+  <ellipse cx="75" cy="40" rx="12" ry="18" fill="#00ADD8" transform="rotate(-20 75 40)"/>
+  <ellipse cx="125" cy="40" rx="12" ry="18" fill="#00ADD8" transform="rotate(20 125 40)"/>
+  
+  <!-- AI sparkle stars -->
+  <polygon points="155,35 157,40 162,40 158,43 160,48 155,45 150,48 152,43 148,40 153,40" fill="#FFD700"/>
+  <polygon points="45,50 46,53 49,53 47,55 48,58 45,56 42,58 43,55 41,53 44,53" fill="#FFD700"/>
+  <polygon points="160,155 161,158 164,158 162,160 163,163 160,161 157,163 158,160 156,158 159,158" fill="#FFD700"/>
+</svg>
