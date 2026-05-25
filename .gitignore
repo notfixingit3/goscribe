@@ -31,8 +31,9 @@ pkg/goscribe/api_design.md
 coverage.out
 *.test
 
-# Sisyphus internal (planning/state files, not project source)
+# Sisyphus / OpenCode internal (planning/state files, not project source)
 .sisyphus/
+.omo/
 
 # Ledger reports
 ledger-reports/
