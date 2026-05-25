@@ -17,6 +17,13 @@ Thumbs.db
 # Documentation output
 /docs/
 
+# Test artifacts
+pkg/goscribe/custom-output/
+pkg/goscribe/override-output/
+pkg/goscribe/docs/
+pkg/goscribe/api_design.md
+
+
 # State files
 .goscribe-state
 
