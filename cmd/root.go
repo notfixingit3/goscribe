@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
+	"github.com/house/goscribe/cmd/wizard"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -33,6 +35,44 @@ and can track git changes for documentation updates.`,
 	SilenceErrors: true,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		return initConfig()
+	},
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if cmd.Flags().Changed("help") {
+			return cmd.Help()
+		}
+
+		if viper.GetBool("ci") {
+			return cmd.Help()
+		}
+
+		result, err := wizard.RunWizard()
+		if err != nil {
+			if errors.Is(err, wizard.ErrCancelled) {
+				fmt.Fprintln(os.Stderr, "Cancelled.")
+				return nil
+			}
+			if errors.Is(err, wizard.ErrNoTTY) {
+				return cmd.Help()
+			}
+			return err
+		}
+
+		if result.Profile != "" && result.Profile != "<none>" {
+			viper.Set("profile", result.Profile)
+		}
+		if result.Template != "" && result.Template != "<none>" {
+			viper.Set("template", result.Template)
+		}
+		viper.Set("output", result.OutputDir)
+
+		switch result.Operation {
+		case "Generate documentation":
+			return runGenerate(cmd, []string{result.SourcePath})
+		case "Update documentation":
+			return runUpdate(cmd, []string{result.SourcePath})
+		default:
+			return fmt.Errorf("unknown operation: %s", result.Operation)
+		}
 	},
 }
 
