@@ -36,3 +36,6 @@ coverage.out
 
 # Ledger reports
 ledger-reports/
+
+# Test documentation output (track directory, ignore generated .md files)
+test/doc/*.md
