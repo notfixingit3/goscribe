@@ -5,10 +5,10 @@
 <h1 align="center">GoScribe</h1>
 
 <p align="center">
-  Generate comprehensive documentation from Go source code using AI.
+  Generate comprehensive documentation from source code using AI.
 </p>
 
-GoScribe reads your project's source, sends it to an AI provider, and produces full user documentation with real examples. It supports 17 AI providers including OpenAI, Anthropic Claude, Google Gemini, xAI Grok, NVIDIA NIM, GitHub Copilot, and local models via Ollama, vLLM, and LM Studio. It tracks git state so you can incrementally update docs when your code changes, and supports parallel generation with content-addressed caching for performance.
+GoScribe reads your project's source code, sends it to an AI provider, and produces full user documentation with real examples. While it excels with Go projects, it works with any programming language — Python, JavaScript, Rust, Java, and more. It supports 17 AI providers including OpenAI, Anthropic Claude, Google Gemini, xAI Grok, NVIDIA NIM, GitHub Copilot, and local models via Ollama, vLLM, and LM Studio. It tracks git state so you can incrementally update docs when your code changes, and supports parallel generation with content-addressed caching for performance.
 
 ## Install
 
@@ -481,7 +481,7 @@ func main() {
 }
 ```
 
-The plugin dispatches events for file saves, manual triggers, initialization, and shutdown. Set `auto_generate: true` to start the file watcher, which will dispatch `EventFileSaved` events when Go files change. Register a handler to trigger documentation generation in response to events.
+The plugin dispatches events for file saves, manual triggers, initialization, and shutdown. Set `auto_generate: true` to start the file watcher, which will dispatch `EventFileSaved` events when source files change. Register a handler to trigger documentation generation in response to events.
 
 ## CI/CD Integration
 
