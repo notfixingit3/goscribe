@@ -134,6 +134,32 @@ Tag the current commit with the version number.
 goscribe tag
 ```
 
+## Interactive Mode
+
+Running `goscribe` without any subcommand launches an interactive wizard built with [Bubble Tea](https://github.com/charmbracelet/bubbletea). This walks you through configuration so you don't need to remember flags.
+
+### Wizard Flow
+
+1. **Select Operation** — Choose "Generate documentation" or "Update documentation"
+2. **Select Profile** — Pick a documentation profile (or none)
+3. **Select Template** — Pick a writing style template (or none)
+4. **Input Path** — Enter the source directory (defaults to `.`)
+5. **Output Directory** — Enter the output directory (defaults to `docs`)
+6. **Confirm** — Review choices and confirm to run
+
+Press **ESC** at any step to cancel. The wizard also bails out automatically in CI mode (`--ci`), falling back to the standard help text.
+
+```bash
+# Launch the interactive wizard
+goscribe
+
+# Skip wizard and show help
+goscribe --help
+
+# CI mode bypasses the wizard entirely
+goscribe generate --ci
+```
+
 ## Library Usage
 
 GoScribe exposes a public API in `pkg/goscribe` for programmatic use within the same module.
@@ -469,6 +495,10 @@ Profiles tailor the documentation style for different audiences and use cases. U
 | `api-reference` | API reference style with endpoints, parameters, and response formats |
 | `developer-onboarding` | Onboarding guide for new developers joining the project |
 | `operations-runbook` | Operations runbook with deployment, monitoring, and troubleshooting |
+| `release-notes` | Release notes and changelog generation |
+| `architecture-overview` | High-level architecture and design documentation |
+| `contributing-guide` | Contributor guidelines and development workflow |
+| `package-reference` | Package-level API reference with type and function listings |
 
 ### Using Profiles
 
@@ -506,6 +536,31 @@ GoScribe uses git to track what changed between documentation runs.
 3. After updating, it saves the new commit hash.
 
 This means you can run `goscribe generate` once, then `goscribe update` after each batch of changes. No need to regenerate everything from scratch.
+
+## Test App
+
+The repository includes a realistic Go test fixture in `test/app/` for testing documentation generation. It simulates a small HTTP API service with authentication, storage, and middleware. Use it to verify that GoScribe produces correct documentation for real code.
+
+Generated documentation from test runs lands in `test/doc/`, which is gitignored. This lets you experiment without polluting the repo.
+
+### Batch Generation Script
+
+`test/scripts/generate-all.sh` runs `goscribe generate` across every profile and template combination. This is useful for regression testing and comparing outputs.
+
+```bash
+# Run all combinations using the built binary
+BINARY=./goscribe test/scripts/generate-all.sh
+```
+
+The script iterates all 11 documentation profiles against all 5 templates plus a no-template run, producing 66 total combinations. It prints a summary with pass and fail counts, and exits with code 1 if any combination fails.
+
+Environment variables:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `BINARY` | `./goscribe` | Path to the goscribe binary |
+| `TEST_APP` | `test/app` | Source directory to document |
+| `OUTPUT_BASE` | `test/doc` | Base output directory |
 
 ## Requirements
 

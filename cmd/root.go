@@ -92,7 +92,7 @@ func init() {
 	rootCmd.PersistentFlags().Duration("retry-backoff", 0, "Initial backoff between retries (default 2s)")
 	rootCmd.PersistentFlags().Bool("ci", false, "Enable CI mode (non-interactive, structured output)")
 	rootCmd.PersistentFlags().String("output-format", "text", "Output format: text, json, markdown, github")
-	rootCmd.PersistentFlags().String("profile", "", "Documentation profile: software-documenter, technical-writer, github-readme-expert, github-wiki-expert, api-reference, developer-onboarding, operations-runbook")
+	rootCmd.PersistentFlags().String("profile", "", "Documentation profile: software-documenter, technical-writer, github-readme-expert, github-wiki-expert, api-reference, developer-onboarding, operations-runbook, release-notes, architecture-overview, contributing-guide, package-reference")
 	rootCmd.PersistentFlags().String("template", "", "Documentation template: elegant, technical, futuristic, minimal, friendly")
 
 	_ = viper.BindPFlag("provider", rootCmd.PersistentFlags().Lookup("provider"))
