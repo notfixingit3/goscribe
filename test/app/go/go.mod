@@ -1,4 +1,4 @@
-module github.com/house/goscribe/test/app
+module github.com/house/goscribe/test/app/go
 
 go 1.24
 

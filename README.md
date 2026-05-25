@@ -160,23 +160,23 @@ goscribe generate -f
 
 ### Working with the Test App
 
-The `test/app/` directory contains a realistic Go HTTP API service you can use to experiment with GoScribe:
+The `test/app/go/` directory contains a realistic Go HTTP API service you can use to experiment with GoScribe:
 
 ```bash
 # Build the test app
-cd test/app && go build ./...
+cd test/app/go && go build ./...
 
 # Generate docs for the test app
-goscribe generate test/app
+goscribe generate test/app/go
 
 # Generate with different profiles to see the output variety
-goscribe generate test/app --profile api-reference
-goscribe generate test/app --profile github-readme-expert
-goscribe generate test/app --profile developer-onboarding
+goscribe generate test/app/go --profile api-reference
+goscribe generate test/app/go --profile github-readme-expert
+goscribe generate test/app/go --profile developer-onboarding
 
 # Generate with a template for style variation
-goscribe generate test/app --profile technical-writer --template elegant -o test/doc/elegant
-goscribe generate test/app --profile technical-writer --template minimal -o test/doc/minimal
+goscribe generate test/app/go --profile technical-writer --template elegant -o test/output/elegant
+goscribe generate test/app/go --profile technical-writer --template minimal -o test/output/minimal
 
 # Run the batch script to generate all combinations
 BINARY=./goscribe test/scripts/generate-all.sh
@@ -188,27 +188,27 @@ Each profile produces different documentation styles. Here are examples using th
 
 **API Reference** — Documents endpoints, parameters, and response formats:
 ```bash
-goscribe generate test/app --profile api-reference -o docs/api
+goscribe generate test/app/go --profile api-reference -o docs/api
 ```
 
 **GitHub README** — README-style with badges and installation instructions:
 ```bash
-goscribe generate test/app --profile github-readme-expert -o docs/readme
+goscribe generate test/app/go --profile github-readme-expert -o docs/readme
 ```
 
 **Developer Onboarding** — Guide for new developers:
 ```bash
-goscribe generate test/app --profile developer-onboarding -o docs/onboarding
+goscribe generate test/app/go --profile developer-onboarding -o docs/onboarding
 ```
 
 **Architecture Overview** — High-level design documentation:
 ```bash
-goscribe generate test/app --profile architecture-overview -o docs/arch
+goscribe generate test/app/go --profile architecture-overview -o docs/arch
 ```
 
 **Release Notes** — Changelog and release documentation:
 ```bash
-goscribe generate test/app --profile release-notes -o docs/release
+goscribe generate test/app/go --profile release-notes -o docs/release
 ```
 
 ### Template Examples
@@ -217,51 +217,51 @@ Templates modify the writing style. Combine with any profile:
 
 ```bash
 # Elegant style — sophisticated and polished
-goscribe generate test/app --profile software-documenter --template elegant
+goscribe generate test/app/go --profile software-documenter --template elegant
 
 # Technical style — precise and code-heavy
-goscribe generate test/app --profile api-reference --template technical
+goscribe generate test/app/go --profile api-reference --template technical
 
 # Friendly style — conversational and welcoming
-goscribe generate test/app --profile developer-onboarding --template friendly
+goscribe generate test/app/go --profile developer-onboarding --template friendly
 
 # Minimal style — just the facts
-goscribe generate test/app --profile operations-runbook --template minimal
+goscribe generate test/app/go --profile operations-runbook --template minimal
 
 # Futuristic style — modern and innovative
-goscribe generate test/app --profile architecture-overview --template futuristic
+goscribe generate test/app/go --profile architecture-overview --template futuristic
 ```
 
 ### Advanced Configuration
 
 ```bash
 # Use a specific provider and model
-goscribe generate test/app --provider openai --model gpt-4
+goscribe generate test/app/go --provider openai --model gpt-4
 
 # Set timeout and retries for flaky connections
-goscribe generate test/app --timeout 10m --retries 5
+goscribe generate test/app/go --timeout 10m --retries 5
 
 # Parallel generation with caching for large codebases
-goscribe generate test/app --workers 4 --cache-dir /tmp/goscribe-cache
+goscribe generate test/app/go --workers 4 --cache-dir /tmp/goscribe-cache
 
 # Custom output directory
-goscribe generate test/app -o my-docs
+goscribe generate test/app/go -o my-docs
 
 # Verbose output for debugging
-goscribe generate test/app -v
+goscribe generate test/app/go -v
 ```
 
 ### CI/CD Examples
 
 ```bash
 # Generate with structured JSON output
-goscribe generate test/app --ci --output-format json
+goscribe generate test/app/go --ci --output-format json
 
 # GitHub Actions annotations
-goscribe generate test/app --ci --output-format github
+goscribe generate test/app/go --ci --output-format github
 
 # Markdown output for further processing
-goscribe generate test/app --ci --output-format markdown
+goscribe generate test/app/go --ci --output-format markdown
 ```
 
 ### Library API Examples
@@ -275,7 +275,7 @@ client, _ := goscribe.NewClient(
     goscribe.WithOutputDir("docs"),
 )
 
-result, err := client.Generate(ctx, "test/app", goscribe.GenerateOptions{})
+result, err := client.Generate(ctx, "test/app/go", goscribe.GenerateOptions{})
 if err != nil {
     log.Fatal(err)
 }
@@ -284,7 +284,7 @@ fmt.Printf("Generated %d files\n", result.FilesGenerated)
 
 ```go
 // Update only changed files
-updateResult, err := client.Update(ctx, "test/app", goscribe.UpdateOptions{})
+updateResult, err := client.Update(ctx, "test/app/go", goscribe.UpdateOptions{})
 if err != nil {
     log.Fatal(err)
 }
@@ -308,7 +308,7 @@ client, _ := goscribe.NewClient(
     goscribe.WithTemplate("elegant"),
 )
 
-result, _ := client.Generate(ctx, "test/app", goscribe.GenerateOptions{})
+result, _ := client.Generate(ctx, "test/app/go", goscribe.GenerateOptions{})
 ```
 
 ## Interactive Mode
@@ -716,14 +716,14 @@ This means you can run `goscribe generate` once, then `goscribe update` after ea
 
 ## Test App
 
-The repository includes a realistic Go test fixture in `test/app/` for testing documentation generation. It simulates a small HTTP API service with authentication, storage, and middleware — the kind of codebase GoScribe is designed to document.
+The repository includes a realistic Go test fixture in `test/app/go/` for testing documentation generation. It simulates a small HTTP API service with authentication, storage, and middleware — the kind of codebase GoScribe is designed to document.
 
 ### What's in the Test App
 
 ```
-test/app/
+test/app/go/
 ├── main.go              # Entry point with graceful shutdown
-├── go.mod               # Module: github.com/house/goscribe/test/app
+├── go.mod               # Module: github.com/house/goscribe/test/app/go
 ├── pkg/auth/
 │   ├── auth.go          # AuthManager with Login/ValidateToken
 │   └── middleware.go    # RequireAuth and RequireRole middleware
@@ -742,7 +742,7 @@ The test app demonstrates real Go patterns: interfaces, struct embedding, contex
 ### Running the Test App
 
 ```bash
-cd test/app
+cd test/app/go
 
 # Build
 go build ./...
@@ -763,13 +763,13 @@ go run main.go -port 8080 -dsn "test.db"
 go build ./cmd/goscribe
 
 # Generate docs with defaults
-./goscribe generate test/app
+./goscribe generate test/app/go
 
 # Generate with a specific profile
-./goscribe generate test/app --profile api-reference
+./goscribe generate test/app/go --profile api-reference
 
 # Generate with profile + template
-./goscribe generate test/app --profile technical-writer --template elegant
+./goscribe generate test/app/go --profile technical-writer --template elegant
 ```
 
 #### Exploring All Profiles
@@ -778,28 +778,28 @@ See how different profiles document the same codebase:
 
 ```bash
 # API Reference — endpoints, parameters, responses
-./goscribe generate test/app --profile api-reference -o test/doc/api-reference
+./goscribe generate test/app/go --profile api-reference -o test/output/api-reference
 
 # GitHub README — badges, install, quick start
-./goscribe generate test/app --profile github-readme-expert -o test/doc/readme
+./goscribe generate test/app/go --profile github-readme-expert -o test/output/readme
 
 # Developer Onboarding — guide for new team members
-./goscribe generate test/app --profile developer-onboarding -o test/doc/onboarding
+./goscribe generate test/app/go --profile developer-onboarding -o test/output/onboarding
 
 # Architecture Overview — high-level design
-./goscribe generate test/app --profile architecture-overview -o test/doc/architecture
+./goscribe generate test/app/go --profile architecture-overview -o test/output/architecture
 
 # Operations Runbook — deployment, monitoring, troubleshooting
-./goscribe generate test/app --profile operations-runbook -o test/doc/runbook
+./goscribe generate test/app/go --profile operations-runbook -o test/output/runbook
 
 # Release Notes — changelog style
-./goscribe generate test/app --profile release-notes -o test/doc/release-notes
+./goscribe generate test/app/go --profile release-notes -o test/output/release-notes
 
 # Contributing Guide — development workflow
-./goscribe generate test/app --profile contributing-guide -o test/doc/contributing
+./goscribe generate test/app/go --profile contributing-guide -o test/output/contributing
 
 # Package Reference — API docs for each package
-./goscribe generate test/app --profile package-reference -o test/doc/package-ref
+./goscribe generate test/app/go --profile package-reference -o test/output/package-ref
 ```
 
 #### Exploring All Templates
@@ -809,11 +809,11 @@ See how templates change the writing style:
 ```bash
 # Same profile, different templates
 PROFILE="technical-writer"
-./goscribe generate test/app --profile $PROFILE --template elegant  -o test/doc/$PROFILE/elegant
-./goscribe generate test/app --profile $PROFILE --template technical -o test/doc/$PROFILE/technical
-./goscribe generate test/app --profile $PROFILE --template friendly  -o test/doc/$PROFILE/friendly
-./goscribe generate test/app --profile $PROFILE --template minimal   -o test/doc/$PROFILE/minimal
-./goscribe generate test/app --profile $PROFILE --template futuristic -o test/doc/$PROFILE/futuristic
+./goscribe generate test/app/go --profile $PROFILE --template elegant  -o test/output/$PROFILE/elegant
+./goscribe generate test/app/go --profile $PROFILE --template technical -o test/output/$PROFILE/technical
+./goscribe generate test/app/go --profile $PROFILE --template friendly  -o test/output/$PROFILE/friendly
+./goscribe generate test/app/go --profile $PROFILE --template minimal   -o test/output/$PROFILE/minimal
+./goscribe generate test/app/go --profile $PROFILE --template futuristic -o test/output/$PROFILE/futuristic
 ```
 
 #### Comparing Outputs
@@ -822,14 +822,14 @@ After generating multiple variants, compare them side by side:
 
 ```bash
 # See what files were generated
-find test/doc -name "*.md" | sort
+find test/output -name "*.md" | sort
 
 # Compare two profiles
-ls test/doc/api-reference/
-ls test/doc/github-readme-expert/
+ls test/output/api-reference/
+ls test/output/github-readme-expert/
 
 # Check file sizes to see verbosity differences
-find test/doc -name "*.md" -exec wc -l {} + | sort -n
+find test/output -name "*.md" -exec wc -l {} + | sort -n
 ```
 
 ### Batch Generation Script
@@ -853,8 +853,8 @@ The script iterates all 11 documentation profiles against all 5 templates plus a
 ```
 === GoScribe Generate All ===
 Binary:     ./goscribe
-Test app:   test/app
-Output:     test/doc
+Test app:   test/app/go
+Output:     test/output
 Profiles:   11
 Templates:  5
 
@@ -872,8 +872,8 @@ Environment variables:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `BINARY` | `./goscribe` | Path to the goscribe binary |
-| `TEST_APP` | `test/app` | Source directory to document |
-| `OUTPUT_BASE` | `test/doc` | Base output directory |
+| `TEST_APP` | `test/app/go` | Source directory to document |
+| `OUTPUT_BASE` | `test/output` | Base output directory |
 
 ### Incremental Updates
 
@@ -881,13 +881,13 @@ Test the `update` command by making changes to the test app:
 
 ```bash
 # Initial generation
-./goscribe generate test/app --profile software-documenter -o test/doc/update-test
+./goscribe generate test/app/go --profile software-documenter -o test/output/update-test
 
-# Make a change to test/app/pkg/api/handlers.go
+# Make a change to test/app/go/pkg/api/handlers.go
 # ... edit the file ...
 
 # Update only changed sections
-./goscribe update test/app --profile software-documenter -o test/doc/update-test
+./goscribe update test/app/go --profile software-documenter -o test/output/update-test
 ```
 
 ### Testing with Different Providers
@@ -896,13 +896,13 @@ If you have multiple providers configured, test how they document the same code:
 
 ```bash
 # Ollama (local)
-./goscribe generate test/app --provider ollama --model llama2
+./goscribe generate test/app/go --provider ollama --model llama2
 
 # OpenAI
-./goscribe generate test/app --provider openai --model gpt-4
+./goscribe generate test/app/go --provider openai --model gpt-4
 
 # Claude
-./goscribe generate test/app --provider claude --model claude-3-opus
+./goscribe generate test/app/go --provider claude --model claude-3-opus
 ```
 
 ## Requirements

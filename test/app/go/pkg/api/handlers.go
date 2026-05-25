@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/house/goscribe/test/app/pkg/auth"
+	"github.com/house/goscribe/test/app/go/pkg/auth"
 )
 
 // healthHandler responds with the service health status.

@@ -13,9 +13,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/house/goscribe/test/app/pkg/api"
-	"github.com/house/goscribe/test/app/pkg/auth"
-	"github.com/house/goscribe/test/app/pkg/storage"
+	"github.com/house/goscribe/test/app/go/pkg/api"
+	"github.com/house/goscribe/test/app/go/pkg/auth"
+	"github.com/house/goscribe/test/app/go/pkg/storage"
 )
 
 func main() {

@@ -9,12 +9,12 @@ set -euo pipefail
 #
 # Env vars:
 #   BINARY      - goscribe binary path (default: ./goscribe)
-#   TEST_APP    - test fixture app path (default: test/app)
-#   OUTPUT_BASE - output base directory (default: test/doc)
+#   TEST_APP    - test fixture app path (default: test/app/go)
+#   OUTPUT_BASE - output base directory (default: test/output/go)
 
 BINARY="${BINARY:-./goscribe}"
-TEST_APP="${TEST_APP:-test/app}"
-OUTPUT_BASE="${OUTPUT_BASE:-test/doc}"
+TEST_APP="${TEST_APP:-test/app/go}"
+OUTPUT_BASE="${OUTPUT_BASE:-test/output/go}"
 
 PROFILES=(
     software-documenter

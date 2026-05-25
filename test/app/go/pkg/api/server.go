@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/house/goscribe/test/app/pkg/auth"
-	"github.com/house/goscribe/test/app/pkg/storage"
+	"github.com/house/goscribe/test/app/go/pkg/auth"
+	"github.com/house/goscribe/test/app/go/pkg/storage"
 )
 
 // Server is the HTTP server for the application.
