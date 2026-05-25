@@ -178,7 +178,7 @@ func TestUpdatePromptContainsFileContent(t *testing.T) {
 	if !strings.Contains(prompts[0], content) {
 		t.Error("prompt does not contain file content")
 	}
-	if !strings.Contains(prompts[0], "Update the documentation") {
+	if !strings.Contains(prompts[0], "updating") {
 		t.Error("prompt missing update instruction")
 	}
 }

@@ -1,5 +1,7 @@
 package docs
 
+import "fmt"
+
 // PromptBuilder constructs prompts and formats output using a Profile
 // and an optional Template. A nil profile resolves to the default profile.
 // A nil template is an identity pass-through.
@@ -24,12 +26,26 @@ func (b *PromptBuilder) WithTemplate(t Template) *PromptBuilder {
 	return b
 }
 
+// coherenceHint returns a bridging sentence that connects the profile
+// description and template description. Returns empty string when no
+// template is set.
+func (b *PromptBuilder) coherenceHint() string {
+	if b.template == nil {
+		return ""
+	}
+	return fmt.Sprintf("You are generating %s. Write in a %s style.\n\n",
+		b.profile.Description(), b.template.Description())
+}
+
 // BuildGeneratePrompt returns the generation prompt for a file.
 // If a template is set, its style prompt is appended.
 func (b *PromptBuilder) BuildGeneratePrompt(file string, content []byte) string {
 	prompt := b.profile.BuildPrompt(file, content)
+	if hint := b.coherenceHint(); hint != "" {
+		prompt += "\n\n" + hint
+	}
 	if b.template != nil {
-		prompt += "\n\n" + b.template.StylePrompt()
+		prompt += b.template.StylePrompt()
 	}
 	return prompt
 }
@@ -38,8 +54,11 @@ func (b *PromptBuilder) BuildGeneratePrompt(file string, content []byte) string 
 // If a template is set, its style prompt is appended.
 func (b *PromptBuilder) BuildUpdatePrompt(file string, content []byte) string {
 	prompt := b.profile.BuildUpdatePrompt(file, content)
+	if hint := b.coherenceHint(); hint != "" {
+		prompt += "\n\n" + hint
+	}
 	if b.template != nil {
-		prompt += "\n\n" + b.template.StylePrompt()
+		prompt += b.template.StylePrompt()
 	}
 	return prompt
 }
