@@ -17,6 +17,20 @@ type WizardResult struct {
 	OutputDir  string
 }
 
+// operationItem is a list item representing a wizard operation.
+type operationItem struct {
+	name string
+}
+
+// Title returns the operation name for display in the list.
+func (i operationItem) Title() string { return i.name }
+
+// Description returns an empty string (operations have no description in the list).
+func (i operationItem) Description() string { return "" }
+
+// FilterValue returns the operation name for filtering.
+func (i operationItem) FilterValue() string { return i.name }
+
 // profileItem is a list item representing a documentation profile.
 type profileItem struct {
 	name string
@@ -53,6 +67,7 @@ type wizardModel struct {
 	selectedTemplate  string
 	sourcePath        string
 	outputDir         string
+	operationList     list.Model
 	profileList       list.Model
 	templateList      list.Model
 	pathInput         textinput.Model
@@ -92,12 +107,20 @@ func NewModel() wizardModel {
 	outputInput := textinput.New()
 	outputInput.Placeholder = "docs"
 
+	operationItems := []list.Item{
+		operationItem{name: "Generate documentation"},
+		operationItem{name: "Update documentation"},
+	}
+	operationList := list.New(operationItems, list.NewDefaultDelegate(), 0, 0)
+	operationList.SetShowStatusBar(false)
+
 	return wizardModel{
-		state:        StateSelectOperation,
-		profileList:  profileList,
-		templateList: templateList,
-		pathInput:    pathInput,
-		outputInput:  outputInput,
+		state:         StateSelectOperation,
+		operationList: operationList,
+		profileList:   profileList,
+		templateList:  templateList,
+		pathInput:     pathInput,
+		outputInput:   outputInput,
 	}
 }
 
