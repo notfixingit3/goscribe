@@ -19,7 +19,7 @@ func (m wizardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyPressMsg:
 		if msg.String() == "ctrl+c" || msg.String() == "esc" {
-			m.cancelled = true
+			m.canceled = true
 			m.state = StateDone
 			return m, tea.Quit
 		}
@@ -134,16 +134,16 @@ func (m wizardModel) View() tea.View {
 
 	case StateConfirm:
 		b.WriteString("Confirm your choices:\n\n")
-		b.WriteString(fmt.Sprintf("Operation:  %s\n", m.selectedOperation))
-		b.WriteString(fmt.Sprintf("Profile:    %s\n", m.selectedProfile))
-		b.WriteString(fmt.Sprintf("Template:   %s\n", m.selectedTemplate))
-		b.WriteString(fmt.Sprintf("Source:     %s\n", m.sourcePath))
-		b.WriteString(fmt.Sprintf("Output:     %s\n\n", m.outputDir))
+		fmt.Fprintf(&b, "Operation:  %s\n", m.selectedOperation)
+		fmt.Fprintf(&b, "Profile:    %s\n", m.selectedProfile)
+		fmt.Fprintf(&b, "Template:   %s\n", m.selectedTemplate)
+		fmt.Fprintf(&b, "Source:     %s\n", m.sourcePath)
+		fmt.Fprintf(&b, "Output:     %s\n\n", m.outputDir)
 		b.WriteString("Press Y to confirm, N to edit, ESC to cancel")
 
 	case StateDone:
-		if m.cancelled {
-			b.WriteString("Cancelled.")
+		if m.canceled {
+			b.WriteString("Canceled.")
 		} else {
 			b.WriteString("Done!")
 		}

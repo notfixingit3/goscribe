@@ -2,14 +2,15 @@
 package wizard
 
 import (
-	"github.com/house/goscribe/internal/docs"
 	"charm.land/bubbles/v2/list"
 	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
+
+	"github.com/house/goscribe/internal/docs"
 )
 
-// WizardResult holds the final selections made by the user in the wizard.
-type WizardResult struct {
+// Result holds the final selections made by the user in the wizard.
+type Result struct {
 	Operation  string
 	Profile    string
 	Template   string
@@ -61,7 +62,7 @@ func (i templateItem) FilterValue() string { return i.name }
 
 // wizardModel is the bubbletea model for the interactive wizard.
 type wizardModel struct {
-	state             WizardState
+	state             State
 	selectedOperation string
 	selectedProfile   string
 	selectedTemplate  string
@@ -74,12 +75,12 @@ type wizardModel struct {
 	outputInput       textinput.Model
 	width             int
 	height            int
-	cancelled         bool
+	canceled          bool
 	err               error
 }
 
-// NewModel creates and initializes a new wizardModel with default state and UI components.
-func NewModel() wizardModel {
+// newModel creates and initializes a new wizardModel with default state and UI components.
+func newModel() wizardModel {
 	// Profile list
 	profileNames := docs.RegisteredProfiles()
 	profileItems := make([]list.Item, len(profileNames))

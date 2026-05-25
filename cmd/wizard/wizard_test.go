@@ -8,16 +8,16 @@ import (
 	"github.com/house/goscribe/internal/docs"
 )
 
-// TestModelInit verifies NewModel() initializes with the correct default state.
+// TestModelInit verifies newModel() initializes with the correct default state.
 func TestModelInit(t *testing.T) {
-	m := NewModel()
+	m := newModel()
 
 	if m.state != StateSelectOperation {
 		t.Errorf("expected initial state StateSelectOperation (%d), got %d", StateSelectOperation, m.state)
 	}
 
-	if m.cancelled {
-		t.Error("expected cancelled to be false on initialization")
+	if m.canceled {
+		t.Error("expected canceled to be false on initialization")
 	}
 
 	if m.err != nil {
@@ -38,7 +38,7 @@ func TestModelInit(t *testing.T) {
 
 // TestProfileListPopulated verifies the profile list matches docs.RegisteredProfiles().
 func TestProfileListPopulated(t *testing.T) {
-	m := NewModel()
+	m := newModel()
 
 	expectedProfiles := docs.RegisteredProfiles()
 	profileItems := m.profileList.Items()
@@ -61,7 +61,7 @@ func TestProfileListPopulated(t *testing.T) {
 // TestTemplateNone verifies the template list includes "<none>" as the first item
 // and has the correct total count.
 func TestTemplateNone(t *testing.T) {
-	m := NewModel()
+	m := newModel()
 
 	templateItems := m.templateList.Items()
 	expectedCount := len(docs.RegisteredTemplates()) + 1 // +1 for "<none>"
@@ -85,7 +85,7 @@ func TestTemplateNone(t *testing.T) {
 
 // TestStepTransitions verifies each step advances to the next on enter key.
 func TestStepTransitions(t *testing.T) {
-	m := NewModel()
+	m := newModel()
 
 	// StateSelectOperation -> StateSelectProfile
 	item, ok := m.operationList.SelectedItem().(operationItem)
@@ -176,82 +176,82 @@ func TestStepTransitions(t *testing.T) {
 	if wm6.state != StateDone {
 		t.Errorf("expected StateDone after confirm, got %d", wm6.state)
 	}
-	if wm6.cancelled {
-		t.Error("expected cancelled to be false on confirm")
+	if wm6.canceled {
+		t.Error("expected canceled to be false on confirm")
 	}
 	if cmd == nil {
 		t.Fatal("expected tea.Quit cmd after confirm, got nil")
 	}
 }
 
-// TestCancelOnEsc verifies ESC at any step sets cancelled=true and returns tea.Quit.
+// TestCancelOnEsc verifies ESC at any step sets canceled=true and returns tea.Quit.
 func TestCancelOnEsc(t *testing.T) {
 	// Test ESC at initial state.
-	m := NewModel()
-	newModel, cmd := m.Update(tea.KeyPressMsg{Text: "esc"})
-	wm := newModel.(wizardModel)
-	if !wm.cancelled {
-		t.Error("expected cancelled=true after esc")
+	m := newModel()
+	updatedModel, cmd := m.Update(tea.KeyPressMsg{Text: "esc"})
+	wm := updatedModel.(wizardModel)
+	if !wm.canceled {
+		t.Error("expected canceled=true after esc")
 	}
 	if cmd == nil {
 		t.Fatal("expected tea.Quit cmd after esc, got nil")
 	}
 
 	// Test ESC at profile selection state.
-	m2 := NewModel()
+	m2 := newModel()
 	m2.state = StateSelectProfile
-	newModel2, cmd2 := m2.Update(tea.KeyPressMsg{Text: "esc"})
-	wm2 := newModel2.(wizardModel)
-	if !wm2.cancelled {
-		t.Error("expected cancelled=true after esc at profile state")
+	updatedModel2, cmd2 := m2.Update(tea.KeyPressMsg{Text: "esc"})
+	wm2 := updatedModel2.(wizardModel)
+	if !wm2.canceled {
+		t.Error("expected canceled=true after esc at profile state")
 	}
 	if cmd2 == nil {
 		t.Fatal("expected tea.Quit cmd after esc at profile state, got nil")
 	}
 
 	// Test ESC at template selection state.
-	m3 := NewModel()
+	m3 := newModel()
 	m3.state = StateSelectTemplate
-	newModel3, cmd3 := m3.Update(tea.KeyPressMsg{Text: "esc"})
-	wm3 := newModel3.(wizardModel)
-	if !wm3.cancelled {
-		t.Error("expected cancelled=true after esc at template state")
+	updatedModel3, cmd3 := m3.Update(tea.KeyPressMsg{Text: "esc"})
+	wm3 := updatedModel3.(wizardModel)
+	if !wm3.canceled {
+		t.Error("expected canceled=true after esc at template state")
 	}
 	if cmd3 == nil {
 		t.Fatal("expected tea.Quit cmd after esc at template state, got nil")
 	}
 
 	// Test ESC at input path state.
-	m4 := NewModel()
+	m4 := newModel()
 	m4.state = StateInputPath
-	newModel4, cmd4 := m4.Update(tea.KeyPressMsg{Text: "esc"})
-	wm4 := newModel4.(wizardModel)
-	if !wm4.cancelled {
-		t.Error("expected cancelled=true after esc at path input state")
+	updatedModel4, cmd4 := m4.Update(tea.KeyPressMsg{Text: "esc"})
+	wm4 := updatedModel4.(wizardModel)
+	if !wm4.canceled {
+		t.Error("expected canceled=true after esc at path input state")
 	}
 	if cmd4 == nil {
 		t.Fatal("expected tea.Quit cmd after esc at path input state, got nil")
 	}
 
 	// Test ESC at input output state.
-	m5 := NewModel()
+	m5 := newModel()
 	m5.state = StateInputOutput
-	newModel5, cmd5 := m5.Update(tea.KeyPressMsg{Text: "esc"})
-	wm5 := newModel5.(wizardModel)
-	if !wm5.cancelled {
-		t.Error("expected cancelled=true after esc at output input state")
+	updatedModel5, cmd5 := m5.Update(tea.KeyPressMsg{Text: "esc"})
+	wm5 := updatedModel5.(wizardModel)
+	if !wm5.canceled {
+		t.Error("expected canceled=true after esc at output input state")
 	}
 	if cmd5 == nil {
 		t.Fatal("expected tea.Quit cmd after esc at output input state, got nil")
 	}
 
 	// Test ESC at confirm state.
-	m6 := NewModel()
+	m6 := newModel()
 	m6.state = StateConfirm
-	newModel6, cmd6 := m6.Update(tea.KeyPressMsg{Text: "esc"})
-	wm6 := newModel6.(wizardModel)
-	if !wm6.cancelled {
-		t.Error("expected cancelled=true after esc at confirm state")
+	updatedModel6, cmd6 := m6.Update(tea.KeyPressMsg{Text: "esc"})
+	wm6 := updatedModel6.(wizardModel)
+	if !wm6.canceled {
+		t.Error("expected canceled=true after esc at confirm state")
 	}
 	if cmd6 == nil {
 		t.Fatal("expected tea.Quit cmd after esc at confirm state, got nil")

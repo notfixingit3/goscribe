@@ -8,33 +8,34 @@ import (
 	"golang.org/x/term"
 )
 
-var ErrCancelled = errors.New("wizard cancelled")
+// ErrCanceled is returned when the user cancels the wizard with ESC or Ctrl+C.
+var ErrCanceled = errors.New("wizard canceled")
 
 // ErrNoTTY is returned when RunWizard is called but stdin is not a terminal.
 var ErrNoTTY = errors.New("wizard requires a terminal")
 
 // RunWizard starts the interactive TUI wizard and returns the user's selections.
-func RunWizard() (WizardResult, error) {
+func RunWizard() (Result, error) {
 	if !term.IsTerminal(int(os.Stdin.Fd())) {
-		return WizardResult{}, ErrNoTTY
+		return Result{}, ErrNoTTY
 	}
-	m := NewModel()
+	m := newModel()
 	p := tea.NewProgram(m)
 	finalModel, err := p.Run()
 	if err != nil {
-		return WizardResult{}, err
+		return Result{}, err
 	}
 
 	wm, ok := finalModel.(wizardModel)
 	if !ok {
-		return WizardResult{}, errors.New("unexpected model type")
+		return Result{}, errors.New("unexpected model type")
 	}
 
-	if wm.cancelled {
-		return WizardResult{}, ErrCancelled
+	if wm.canceled {
+		return Result{}, ErrCanceled
 	}
 
-	return WizardResult{
+	return Result{
 		Operation:  wm.selectedOperation,
 		Profile:    wm.selectedProfile,
 		Template:   wm.selectedTemplate,

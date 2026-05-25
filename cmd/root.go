@@ -47,8 +47,8 @@ and can track git changes for documentation updates.`,
 
 		result, err := wizard.RunWizard()
 		if err != nil {
-			if errors.Is(err, wizard.ErrCancelled) {
-				fmt.Fprintln(os.Stderr, "Cancelled.")
+			if errors.Is(err, wizard.ErrCanceled) {
+				fmt.Fprintln(os.Stderr, "Canceled.")
 				return nil
 			}
 			if errors.Is(err, wizard.ErrNoTTY) {
